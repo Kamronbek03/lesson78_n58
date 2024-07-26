@@ -1,82 +1,47 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
-import styled from "styled-components";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { Button, TextField, Typography, Box, Modal } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/UseAuth"; // Ensure the path is correct
+import { useAuth } from "../hooks/UseAuth";
 
-Modal.setAppElement("#root");
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f0f0;
-`;
-
-const Card = styled.div`
-  background: lightgrey;
-  border-radius: 5px;
-  border: 2px solid #323232;
-  box-shadow: 4px 4px #323232;
-  padding: 20px;
-  width: 300px;
-`;
-
-const Title = styled.div`
-  font-size: 25px;
-  font-weight: 900;
-  color: #323232;
-  margin-bottom: 20px;
-  text-align: center;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 40px;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  border: 2px solid #323232;
-  padding: 5px 10px;
-  font-size: 15px;
-  outline: none;
-`;
-
-const Button = styled.button`
-  width: 100%;
-  height: 40px;
-  border-radius: 5px;
-  border: 2px solid #323232;
-  background-color: #fff;
-  box-shadow: 4px 4px #323232;
-  font-size: 17px;
-  font-weight: 600;
-  color: #323232;
-  cursor: pointer;
-`;
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 300,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
 
 const Log_In = ({ show, onHide }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
-  const { login } = useAuth(); // Use login from AuthContext
+  const { login } = useAuth();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (data) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/students?firstName=${firstName}&lastName=${lastName}`
+        `http://localhost:3000/students?firstName=${data.firstName}&lastName=${data.lastName}`
       );
 
       const matchedStudent = response.data.find(
         (student) =>
-          student.firstName === firstName && student.lastName === lastName
+          student.firstName === data.firstName &&
+          student.lastName === data.lastName
       );
 
       if (matchedStudent) {
-        login(matchedStudent); // Set user in context
+        login(matchedStudent);
         navigate("/Profile");
-        onHide(); // Close the modal
+        onHide();
       } else {
         alert("Student not found");
       }
@@ -86,43 +51,39 @@ const Log_In = ({ show, onHide }) => {
   };
 
   return (
-    <Modal
-      isOpen={show}
-      onRequestClose={onHide}
-      style={{
-        content: {
-          top: "50%",
-          left: "50%",
-          right: "auto",
-          bottom: "auto",
-          marginRight: "-50%",
-          transform: "translate(-50%, -50%)",
-          width: "300px",
-        },
-      }}
-    >
-      <Wrapper>
-        <Card>
-          <Title>Log In</Title>
-          <form onSubmit={handleLogin}>
-            <Input
-              type="text"
-              placeholder="First Name"
-              required
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="Last Name"
-              required
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            <Button type="submit">Submit</Button>
-          </form>
-        </Card>
-      </Wrapper>
+    <Modal open={show} onClose={onHide}>
+      <Box sx={modalStyle}>
+        <Typography variant="h5" component="h2" mb={2} textAlign="center">
+          Log In
+        </Typography>
+        <form onSubmit={handleSubmit(handleLogin)}>
+          <TextField
+            fullWidth
+            label="First Name"
+            {...register("firstName", { required: "First name is required" })}
+            error={!!errors.firstName}
+            helperText={errors.firstName?.message}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Last Name"
+            {...register("lastName", { required: "Last name is required" })}
+            error={!!errors.lastName}
+            helperText={errors.lastName?.message}
+            margin="normal"
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{ mt: 2 }}
+          >
+            Submit
+          </Button>
+        </form>
+      </Box>
     </Modal>
   );
 };

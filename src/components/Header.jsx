@@ -6,7 +6,6 @@ import { useAuth } from "../hooks/UseAuth";
 import { useState } from "react";
 import Log_In from "../pages/Log_In";
 import Sign_In from "../pages/Sign_In";
-
 import styled from "styled-components";
 
 const Logo = styled.h2`

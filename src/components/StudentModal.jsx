@@ -1,114 +1,95 @@
 import React from "react";
-import Modal from "react-modal";
-import { Form } from "react-bootstrap";
-import styled from "styled-components";
+import { useForm } from "react-hook-form";
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Modal,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
-Modal.setAppElement("#root");
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
 
-const Button = styled.button`
-  font-family: monospace;
-  background-color: ${(props) => props.bgColor || "#f3f7fe"};
-  color: ${(props) => props.color || "#3b82f6"};
-  border: none;
-  border-radius: 8px;
-  width: 100px;
-  height: 45px;
-  transition: 0.3s;
+const StudentModal = ({ show, onHide, form, onChange, onSubmit, selected }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: form,
+  });
 
-  &:hover {
-    background-color: ${(props) => props.hoverBgColor || "#3b82f6"};
-    box-shadow: 0 0 0 5px ${(props) => props.hoverShadow || "#3b83f65f"};
-    color: #fff;
-  }
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-`;
-
-const StudentModal = ({ show, onHide, form, onChange, onSubmit, selected }) => (
-  <Modal
-    isOpen={show}
-    onRequestClose={onHide}
-    style={{
-      content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
-        width: "400px",
-      },
-    }}
-  >
-    <h2>{selected === null ? "Adding student" : "Editing student"}</h2>{" "}
-    <Form onSubmit={onSubmit}>
-      <Form.Group className="mb-3">
-        <Form.Label>First name</Form.Label>
-        <Form.Control
-          type="text"
-          name="firstName"
-          value={form.firstName}
-          onChange={onChange}
-          required
-        />
-        <Form.Control.Feedback type="invalid">
-          Please fill this field!
-        </Form.Control.Feedback>
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Last name</Form.Label>
-        <Form.Control
-          type="text"
-          name="lastName"
-          value={form.lastName}
-          onChange={onChange}
-          required
-        />
-        <Form.Control.Feedback type="invalid">
-          Please fill this field!
-        </Form.Control.Feedback>
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Group</Form.Label>
-        <Form.Select
-          name="group"
-          value={form.group}
-          onChange={onChange}
-          required
-        >
-          <option value="React-11">React-11</option>
-          <option value="React-13">React-13</option>
-          <option value="React-17">React-17</option>
-          <option value="React-58">React-58</option>
-        </Form.Select>
-      </Form.Group>
-      <ButtonsContainer>
-        <Button
-          bgColor="#f3f7fe"
-          color="#3b82f6"
-          hoverBgColor="#23c817"
-          hoverShadow="#7edf685f"
-          type="submit"
-        >
-          Save
-        </Button>
-        <Button
-          bgColor="#f3f7fe"
-          color="#3b82f6"
-          hoverBgColor="#cd4632"
-          hoverShadow="#eb85855f"
-          onClick={onHide}
-        >
-          Cancel
-        </Button>
-      </ButtonsContainer>
-    </Form>
-  </Modal>
-);
+  return (
+    <Modal open={show} onClose={onHide}>
+      <Box sx={modalStyle}>
+        <Typography variant="h5" component="h2" mb={2} textAlign="center">
+          {selected === null ? "Adding student" : "Editing student"}
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            fullWidth
+            label="First Name"
+            {...register("firstName", { required: "First name is required" })}
+            error={!!errors.firstName}
+            helperText={errors.firstName?.message}
+            margin="normal"
+            value={form.firstName}
+            onChange={(e) => onChange(e)}
+          />
+          <TextField
+            fullWidth
+            label="Last Name"
+            {...register("lastName", { required: "Last name is required" })}
+            error={!!errors.lastName}
+            helperText={errors.lastName?.message}
+            margin="normal"
+            value={form.lastName}
+            onChange={(e) => onChange(e)}
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Group</InputLabel>
+            <Select
+              {...register("group", { required: "Group is required" })}
+              defaultValue={form.group}
+              value={form.group}
+              onChange={(e) => {
+                onChange(e);
+                setValue("group", e.target.value);
+              }}
+            >
+              <MenuItem value="React-11">React-11</MenuItem>
+              <MenuItem value="React-13">React-13</MenuItem>
+              <MenuItem value="React-17">React-17</MenuItem>
+              <MenuItem value="React-58">React-58</MenuItem>
+            </Select>
+          </FormControl>
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            <Button variant="contained" color="primary" type="submit">
+              Save
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={onHide}>
+              Cancel
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Modal>
+  );
+};
 
 export default StudentModal;

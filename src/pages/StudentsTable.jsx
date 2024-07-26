@@ -1,27 +1,10 @@
 import React, { useReducer, useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { Container, Row, Col, CircularProgress, Button } from "@mui/material";
 import AppContext from "../AppContext";
 import StudentModal from "../components/StudentModal";
 import StudentTable from "../components/StudentTable";
 import Filter from "../components/Filter";
-import styled from "styled-components";
-
-const Button = styled.button`
-  font-family: monospace;
-  background-color: #f3f7fe;
-  color: #3b82f6;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: #3b82f6;
-    box-shadow: 0 0 0 5px #3b83f65f;
-    color: #fff;
-  }
-`;
 
 const initialState = {
   students: [],
@@ -116,12 +99,10 @@ const StudentsTable = () => {
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleSubmit = (data) => {
     if (selected === null) {
       axios
-        .post("http://localhost:3000/students", form)
+        .post("http://localhost:3000/students", data)
         .then((response) => {
           dispatch({ type: actionTypes.ADD_STUDENT, payload: response.data });
         })
@@ -130,7 +111,7 @@ const StudentsTable = () => {
         });
     } else {
       axios
-        .put(`http://localhost:3000/students/${selected}`, form)
+        .put(`http://localhost:3000/students/${selected}`, data)
         .then((response) => {
           dispatch({
             type: actionTypes.UPDATE_STUDENT,
@@ -181,7 +162,7 @@ const StudentsTable = () => {
   };
 
   if (state.loading) {
-    return <Spinner animation="border" />;
+    return <CircularProgress />;
   }
 
   if (state.error) {
@@ -194,7 +175,11 @@ const StudentsTable = () => {
         <Row className="mb-3">
           <Col>
             <h1>Student Management</h1>
-            <Button className="button" onClick={() => setShowModal(true)}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setShowModal(true)}
+            >
               Add Contact
             </Button>
           </Col>

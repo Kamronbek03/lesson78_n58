@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import StudentsTable from "./pages/StudentsTable";
 import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
-
 import "./App.css";
 
 const App = () => {
