@@ -1,6 +1,6 @@
 import React, { useReducer, useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col, CircularProgress, Button } from "@mui/material";
+import { Container, Grid, CircularProgress, Button } from "@mui/material";
 import AppContext from "../AppContext";
 import StudentModal from "../components/StudentModal";
 import StudentTable from "../components/StudentTable";
@@ -172,8 +172,8 @@ const StudentsTable = () => {
   return (
     <AppContext.Provider value={{ state, dispatch, handleEdit, handleDelete }}>
       <Container className="mt-5">
-        <Row className="mb-3">
-          <Col>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
             <h1>Student Management</h1>
             <Button
               variant="contained"
@@ -182,22 +182,18 @@ const StudentsTable = () => {
             >
               Add Contact
             </Button>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col>
+          </Grid>
+          <Grid item xs={12}>
             <Filter onSearch={handleSearch} />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
+          </Grid>
+          <Grid item xs={12}>
             <StudentTable
               students={state.filteredStudents}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
-          </Col>
-        </Row>
+          </Grid>
+        </Grid>
         <StudentModal
           show={showModal}
           onHide={() => setShowModal(false)}
