@@ -8,28 +8,24 @@ const Filter = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
 
-  // Handle search query change
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
     filterStudents(query, selectedGroup);
   };
 
-  // Handle group filter change
   const handleGroupChange = (e) => {
     const group = e.target.value;
     setSelectedGroup(group);
     filterStudents(searchQuery, group);
   };
 
-  // Filter students based on search query and selected group
   const filterStudents = (query, group) => {
     axios
       .get("http://localhost:3000/students")
       .then((response) => {
         let filteredStudents = response.data;
 
-        // Filter by search query
         if (query) {
           filteredStudents = filteredStudents.filter((student) =>
             (student.firstName + " " + student.lastName)
@@ -38,7 +34,6 @@ const Filter = () => {
           );
         }
 
-        // Filter by selected group
         if (group) {
           filteredStudents = filteredStudents.filter(
             (student) => student.group === group
